@@ -1,6 +1,6 @@
 import datetime
 from project_classes import User, Vault, Pot, Transaction
-from project_functions import submit_transaction, print_slow, int_validator, collect_date, summary, create_pot, create_user, create_vault``
+from project_functions import submit_transaction, print_slow, int_validator, collect_date, summary, create_pot, create_user, create_vault
 from time import sleep
 
 def main():

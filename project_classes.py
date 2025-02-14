@@ -8,7 +8,12 @@ class User:
         :param username: The username of the user.
         """
         self.username = username
-
+    
+    def to_dict(self):
+        return {
+            "username": self.username
+        }
+    
 
 class Vault:
     def __init__(self, vault_id, vault_name, start, end, user):
@@ -45,7 +50,9 @@ class Vault:
         self.start = start
         self.end = end
         self.user = user # Composition used instead of inheritence: Vault has a User object instance
+        self.username = user.username # variable to store usename as a string (not the object instance)
         self.pots = []  # List to store associated Pot instances
+        self.pot_ids = [] # List to store associated Pot id's
 
     def add_pot(self, pot):
         """
@@ -56,6 +63,7 @@ class Vault:
         if not isinstance(pot, Pot):
             raise ValueError("pot must be an instance of the Pot class!")
         self.pots.append(pot)
+        self.pot_ids.append(pot.pot_id)
 
     def vault_value(self):
         """
@@ -69,7 +77,16 @@ class Vault:
                 sum += pot.amount
         return sum
     
-
+    def to_dict(self):
+        return {
+            "vault_id": self.vault_id,
+            "vault_name": self.vault_name,
+            "start": self.start,
+            "end": self.end,
+            "user": self.user,
+            "pots": self.pot_ids
+        }
+    
 class Pot:
     def __init__(self, pot_id, pot_name, start, end, vault, amount=0.00):
         """
@@ -106,8 +123,10 @@ class Pot:
         self.start = start
         self.end = end
         self.vault = vault  # Composition used instead of inheritence: Pot has a Vault object instance
+        self.vault_id = vault.vault_id # vault_id as string
         self.amount = amount
         self.transactions = [] # List only contains transactions that need processing (i.e. subtracting or adding from pot amount)
+        self.transaction_ids = [] # List only contains transaction ids
         
         # Add this Pot to the Vault's list of pots
         vault.add_pot(self)
@@ -121,6 +140,7 @@ class Pot:
         if not isinstance(transaction, Transaction):
             raise ValueError("transaction must be an instance of the Transaction class!")
         self.transactions.append(transaction)
+        self.transaction_ids.append(transaction.transaction_id)
     
     def pot_value(self):
         """
@@ -135,7 +155,17 @@ class Pot:
                 self.amount += sum
                 self.transactions = []
         return 
-
+    
+    def to_dict(self):
+        return {
+            "pot_id": self.pot_id,
+            "pot_name": self.pot_name,
+            "start": self.start,
+            "end": self.end,
+            "vault_id": self.vault_id,
+            "amount": self.amount,
+            "transaction_ids": self.transaction_ids
+        }
         
 class Transaction:
     def __init__(self, transaction_id, transaction_name, date, pot, type="out", amount=0.00):
@@ -166,8 +196,19 @@ class Transaction:
         self.transaction_name = transaction_name
         self.date = date
         self.pot = pot  # Composition used instead of inheritence: Transaction has a Pot object instance
+        self.pot_id = pot.pot_id # String of pot_id
         self.type = type
         self.amount = amount
         
         # Add this transaction to the pots list of transactions
         pot.add_transaction(self)
+
+    def to_dict(self):
+        return {
+        "transaction_id": self.transaction_id,
+        "transaction_name": self.transaction_name,
+        "date": self.date,
+        "pot_id": self.pot_id,
+        "type": self.type,
+        "amount": self.amount
+        }

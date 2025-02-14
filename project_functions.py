@@ -53,6 +53,7 @@ def submit_transaction(x, pot):
     
     if transaction:
         print_slow("Thanks, your transaction has been created succesfully")
+        transaction.save_to_csv()
         print()
     else:
         print_slow("ERROR: transaction not created succesfully")
@@ -109,6 +110,7 @@ def create_user():
     print_slow("Now firstly, what is your name?: ")
     username = input()
     user = User(username)
+    user.save_to_csv()
     print("")
     return user
 
@@ -121,7 +123,7 @@ def create_pot(x, vault):
     print()
 
     # Collect pot id
-    pot_id = x
+    pot_id = x + 1
 
     # Collect start date data and create date object
     print_slow("Excellent. Now we'll define when the pot will be in use. Please note, all date input values must be in the format DD/MM/YY")
@@ -150,6 +152,7 @@ def create_pot(x, vault):
     
     if pot:
         print_slow("Thanks, your pot has been created succesfully")
+        pot.save_to_csv()
         print()
         print()
     else:
@@ -166,7 +169,7 @@ def create_vault(x, user):
     print()
 
     # Collect vault id
-    vault_id = x
+    vault_id = x + 1
 
     # Collect start date data and create date object
     print_slow("Excellent. Now we'll define when the vault will be in use. Please note, all date input values must be in the format DD/MM/YY")
@@ -187,6 +190,7 @@ def create_vault(x, user):
     if vault:
         print()
         print_slow("Thanks, your vault has been created succesfully")
+        vault.save_to_csv()
         print()
         print()
     else:

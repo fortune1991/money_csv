@@ -44,7 +44,7 @@ We hope you enjoy using Money Pots!
     vaults = {}
     
     try:
-        for x in range(0, no_vaults):
+        for x in range(no_vaults):
             print(f"Vault {x+1}")
             vaults["vault_{0}".format(x)] = create_vault(x, user)
     
@@ -61,7 +61,7 @@ We hope you enjoy using Money Pots!
     
     while True:
         try:
-            for x in range(0, no_pots):
+            for x in range(no_pots):
                 print(f"Pot {x+1}")
                 print()
                 
@@ -167,6 +167,10 @@ We hope you enjoy using Money Pots!
             print()
             summary(vaults,pots)
             print()
+            #user.save_to_csv()
+            #vaults.save_to_csv()
+            #pots.save_to_csv()
+            #transactions.save_to_csv()
             exit()
 
         else:

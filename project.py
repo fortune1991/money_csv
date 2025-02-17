@@ -23,19 +23,43 @@ Welcome to Money Pots, your savings and budgeting calculator. Let me help you to
             login = input().strip() # Remove trailing white space
             user_exists = False
             with open("database/users.csv", newline="") as f:
-                reader = csv.DictReader(f)
+                user_reader = csv.DictReader(f)
 
-                for row in reader:
+                for row in user_reader:
                     if row['username'] == login:
                         user_exists = True
+                        name = row['username']
                         
-                
                 if user_exists == True:
-                    #reinstantiate
+                    #reinstantiate user
+                    user = create_user(name)
+
+                    #reinstantiate vaults
+                    with open("database/vaults.csv", newline="") as f:
+                        vaults_reader = csv.DictReader(f)
+                        vaults = vaults_reader[name]
+                    
+                    
+                    
+                    #reinstantiate pots
+                    #with open("database/pots.csv", newline="") as f:
+                        #pots_reader = csv.DictReader(f)
+                        #pots = pots_reader[vaults.pot_id]
+                    #reinstantiate transactions
+                    #with open("database/transactions.csv", newline="") as f:
+                        #transactions_reader = csv.DictReader(f)
+                        #transactions = transactions_reader[pots.transaction_id]
+
+
+
+
+                    print(user)
                     print("Reinstantiate")
                     print()
                     break
                 
+
+
                 else:
                     print()
                     print("User doesn't exist. Respond 'Try again' 'New user' or 'Exit'")    
@@ -109,7 +133,6 @@ Welcome to Money Pots, your savings and budgeting calculator. Let me help you to
             print()
 
         # Print Summary
-
 
         elif action == "Summary":
 

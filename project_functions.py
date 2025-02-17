@@ -63,7 +63,7 @@ def submit_transaction(x, pot):
 def print_slow(txt):
     for x in txt: 
         print(x, end='', flush=True)
-        sleep(0.025)
+        sleep(0) #0.025 at end of programme
 
 def int_validator():
     while True:
@@ -106,9 +106,12 @@ def summary(vaults, pots):
                 else:
                     continue
 
-def create_user():
-    print_slow("Now firstly, what is your name?: ")
-    username = input()
+def create_user(*args):
+    if args:
+        username = args
+    else:
+        print_slow("Now firstly, what is your name?: ")
+        username = input()
     user = User(username)
     user.save_to_csv()
     print("")

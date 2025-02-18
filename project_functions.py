@@ -1,4 +1,4 @@
-import datetime
+import csv, datetime
 from project_classes import User, Vault, Pot, Transaction
 from time import sleep
 
@@ -87,6 +87,15 @@ def collect_date(message):
             print(err)
     return date
 
+def convert_date(string):
+    try:
+        date_input = string
+        date = datetime.datetime.strptime(date_input,"%Y-%m-%d %H:%M:%S")
+    except ValueError as err:
+        print(err)
+
+    return date
+
 def summary(vaults, pots):
 
     for i in vaults:
@@ -163,9 +172,10 @@ def create_pot(x, vault):
     
     return pot
 
-def create_vault(x, user):
+def create_vault(user, x):
     
     # Collect vault name
+    
     print()
     print_slow("What is your preferred name for the vault?: ")
     vault_name = input()
@@ -175,6 +185,7 @@ def create_vault(x, user):
     vault_id = x + 1
 
     # Collect start date data and create date object
+    
     print_slow("Excellent. Now we'll define when the vault will be in use. Please note, all date input values must be in the format DD/MM/YY")
     print()
     print()
@@ -182,6 +193,7 @@ def create_vault(x, user):
     start_date = collect_date("What is the start date that this vault will be active?: ")
 
     # Collect end date data and create date object
+    
     print()
     end_date = collect_date("What is the end date that this vault will be active?: ")
 
@@ -214,7 +226,7 @@ def create_profile():
     try:
         for x in range(no_vaults):
             print(f"Vault {x+1}")
-            vaults["vault_{0}".format(x)] = create_vault(x, user)
+            vaults["vault_{0}".format(x+1)] = create_vault(x, user)
     
     except ValueError as e:  
         print(f"Error: {e}")
@@ -245,7 +257,7 @@ def create_profile():
                             break
 
                     if selected_vault:
-                        pots[f"pot_{x}"] = create_pot(x, selected_vault)
+                        pots[f"pot_{x+1}"] = create_pot(x, selected_vault)
                         break
                     else:
                         print(f"Vault '{vault_input}' not found. Please enter a valid vault name.")
@@ -294,3 +306,68 @@ Vault and Pot data will be lost.
 
 We hope you enjoy using Money Pots!
 """
+
+def re_vaults(name, user):
+    vaults = {}
+    with open("database/vaults.csv", newline="") as f:
+        vaults_reader = csv.DictReader(f)
+        vault_ids = []
+        for row in vaults_reader:
+            if row["user"] == name:
+                # Create variables
+                vault_ids.append(int(row["vault_id"]))
+                vault_id = int(row["vault_id"])
+                vault_name = row["vault_name"]
+                start_date = convert_date(row["start"])
+                end_date = convert_date(row["end"])
+                # Create vault instance
+                vault = Vault(vault_id=vault_id, vault_name=vault_name, start=start_date, end=end_date, user=user)
+                # Add instance to vaults object dictionary
+                vaults["vault_{0}".format(row["vault_id"])] = vault
+                # Append vault_id to list
+                vault_ids.append(vault_id)
+    return vaults, vault_ids
+
+def re_pots(vaults, vault_ids):
+    pots = {}
+    with open("database/pots.csv", newline="") as f:
+        pots_reader = csv.DictReader(f)
+        pot_ids = []
+        for row in pots_reader:
+            if int(row["vault_id"]) in vault_ids:
+                # Create variables
+                pot_id = int(row["pot_id"])
+                pot_name = row["pot_name"]
+                start_date = convert_date(row["start"])
+                end_date = convert_date(row["end"])
+                amount = int(row["amount"])
+                vault = vaults[f"vault_{row["vault_id"]}"] # Dictionary key format is "Vault_1: Object"
+                # Create pot instance
+                pot = Pot(pot_id=pot_id, pot_name=pot_name, start=start_date, end=end_date, vault=vault, amount=amount)
+                # Add instance to pots object dictionary
+                pots["pot_{0}".format(row["pot_id"])] = pot
+                # Append pot_id to list
+                pot_ids.append(pot_id)
+    return pots, pot_ids
+
+def re_transactions(pots, pot_ids):
+    transactions = {}
+    with open("database/transactions.csv", newline="") as f:
+        transactions_reader = csv.DictReader(f)
+        transaction_ids = []
+        for row in transactions_reader:
+            if int(row["pot_id"]) in pot_ids:
+                # Create variables
+                transaction_id = int(row["transaction_id"])
+                transaction_name = row["transaction_name"]
+                date = convert_date(row["date"])
+                type = (row["type"])
+                amount = int(row["amount"])
+                pot = pots[f"pot_{row["pot_id"]}"] # Dictionary key format is "Pot_1: Object"
+                # Create pot instance
+                transaction = Transaction(transaction_id=transaction_id, transaction_name=transaction_name, date=date, pot=pot, type=type, amount=amount)
+                # Add instance to transactions object dictionary
+                transactions["transaction_{0}".format(row["transaction_id"])] = transaction
+                # Append transaction_id to list
+                transaction_ids.append(transaction_id)
+    return transactions, transaction_ids

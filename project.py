@@ -1,9 +1,13 @@
 import csv, datetime, os
 from project_classes import User, Vault, Pot, Transaction
-from project_functions import submit_transaction, print_slow, int_validator, collect_date, summary, create_pot, create_user, create_vault, create_profile, instructions
+from project_functions import submit_transaction, print_slow, int_validator, collect_date, convert_date, summary, create_pot, create_user, create_vault, create_profile, instructions, re_vaults, re_pots, re_transactions
 from time import sleep
 
 def main():
+    vaults = {}
+    pots = {}
+    transactions = {}
+    
     file_exists = os.path.isfile("database/users.csv")
     if not file_exists:
         
@@ -34,31 +38,24 @@ Welcome to Money Pots, your savings and budgeting calculator. Let me help you to
                     #reinstantiate user
                     user = create_user(name)
 
-                    #reinstantiate vaults
-                    with open("database/vaults.csv", newline="") as f:
-                        vaults_reader = csv.DictReader(f)
-                        vaults = vaults_reader[name]
-                    
-                    
+                    #reinstantiate vaults 
+                    vaults, vault_ids = re_vaults(name, user)
                     
                     #reinstantiate pots
-                    #with open("database/pots.csv", newline="") as f:
-                        #pots_reader = csv.DictReader(f)
-                        #pots = pots_reader[vaults.pot_id]
+                    pots, pot_ids = re_pots(vaults, vault_ids)
+
                     #reinstantiate transactions
-                    #with open("database/transactions.csv", newline="") as f:
-                        #transactions_reader = csv.DictReader(f)
-                        #transactions = transactions_reader[pots.transaction_id]
+                    transactions, transaction_ids = re_transactions(pots, pot_ids)
 
+                    # Update Pots and Vaults values
 
+                    for pot in pots.values():
+                        pot.pot_value()
+                    
+                    for vault in vaults.values():
+                        vault.vault_value()
 
-
-                    print(user)
-                    print("Reinstantiate")
-                    print()
                     break
-                
-
 
                 else:
                     print()
@@ -68,6 +65,7 @@ Welcome to Money Pots, your savings and budgeting calculator. Let me help you to
                     response = input()
 
                     if response == "New user":
+                        print()
                         print("Excellent. Please answer the following questions to create a new user profile")
                         user, vaults, pots = create_profile()
                         break
@@ -85,7 +83,6 @@ Welcome to Money Pots, your savings and budgeting calculator. Let me help you to
         print()
         print()
         action = input()
-        print()
 
         if action == "Transaction":
     

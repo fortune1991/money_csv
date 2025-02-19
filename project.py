@@ -42,10 +42,16 @@ Welcome to Money Pots, your savings and budgeting calculator. Let me help you to
                     vaults, vault_ids = re_vaults(name, user)
                     
                     #reinstantiate pots
-                    pots, pot_ids = re_pots(vaults, vault_ids)
+                    pots, pot_ids = re_pots(vaults, vault_ids, user)
 
                     #reinstantiate transactions
-                    transactions, transaction_ids = re_transactions(pots, pot_ids)
+                    transaction_exists = os.path.isfile("database/transactions.csv")
+
+                    if not transaction_exists:
+                        pass
+
+                    else:
+                        transactions, transaction_ids = re_transactions(pots, pot_ids, user)
 
                     # Update Pots and Vaults values
 
@@ -76,7 +82,7 @@ Welcome to Money Pots, your savings and budgeting calculator. Let me help you to
                     else:
                         print("Unknown Command. Please try to login again")                
      
-     # Loop until exit
+    # Loop until exit
 
     while True:
         print_slow('Now, I await your commands to proceed. Please type: \n\n "Transaction" to submit a new transaction, \n "Summary" to get a report of vault/pot values, or \n "Instructions" to get a further information on how to use Money Pots \n "Exit" to terminate the programme')
@@ -100,22 +106,39 @@ Welcome to Money Pots, your savings and budgeting calculator. Let me help you to
                         print()
                         
                         while True: 
+                            
+                            # Count number of existing pots
+                            file_exists = os.path.isfile("database/transactions.csv")
+
+                            if not file_exists:
+                                start_transaction = 0
+                            
+                            else:
+                                transactions_count = []
+                                with open("database/transactions.csv", newline="") as f:
+                                    reader = csv.DictReader(f)
+                                
+                                    for row in reader:
+                                        transactions_count.append(row["transaction_id"])
+                                    
+                                    start_transaction = len(transactions_count)
+                            
                             print_slow("What pot should this pot be assigned to?: ")
                             pot_input = input()
 
                             # Find the pot using a simple loop
                             selected_pot = None
                             for pot in pots.values():
-                                if pot.pot_name == pot_input:
+                                if pot.pot_name == pot_input and pot.username == user.username: 
                                     selected_pot = pot
                                     break
 
                             if selected_pot:
-                                transactions[f"transaction_{x+1}"] = submit_transaction(x+1, selected_pot)
+                                transactions[f"transaction_{x+1}"] = submit_transaction(start_transaction, selected_pot, user)
                                 selected_pot.pot_value()
                                 break
                             else:
-                                print(f"pot '{vault_input}' not found. Please enter a valid vault name.")
+                                print(f"pot '{pot_input}' not found. Please enter a valid pot name.")
                                 print()
                     break
                 

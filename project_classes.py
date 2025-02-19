@@ -105,7 +105,7 @@ class Vault:
             writer.writerow(self.to_dict())
 
 class Pot:
-    def __init__(self, pot_id, pot_name, start, end, vault, amount=0.00):
+    def __init__(self, pot_id, pot_name, start, end, vault, user, amount=0.00):
         """
         Initialize a Pot object.
 
@@ -143,7 +143,9 @@ class Pot:
         self.vault_id = vault.vault_id # vault_id as string
         self.amount = amount
         self.transactions = [] # List only contains transactions that need processing (i.e. subtracting or adding from pot amount)
-        
+        self.user = user # Composition used instead of inheritence: Vault has a User object instance
+        self.username = user.username # variable to store username as a string (not the object instance)
+
         # Add this Pot to the Vault's list of pots
         vault.add_pot(self)
 
@@ -179,20 +181,21 @@ class Pot:
             "end": self.end,
             "vault_id": self.vault_id,
             "amount": self.amount,
+            "user": self.username
         }
     
     def save_to_csv(self):
         #start again here
         file_exists = os.path.isfile("database/pots.csv")
         with open("database/pots.csv", "a", newline="") as f:
-            fieldnames = ["pot_id", "pot_name", "start", "end", "vault_id", "amount"]
+            fieldnames = ["pot_id", "pot_name", "start", "end", "vault_id", "amount", "user"]
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             if not file_exists:
                 writer.writeheader()
             writer.writerow(self.to_dict())
         
 class Transaction:
-    def __init__(self, transaction_id, transaction_name, date, pot, type="out", amount=0.00):
+    def __init__(self, transaction_id, transaction_name, date, pot, user, type="out", amount=0.00):
         """
         Initialize a Transaction object.
 
@@ -223,6 +226,8 @@ class Transaction:
         self.pot_id = pot.pot_id # String of pot_id
         self.type = type
         self.amount = amount
+        self.user = user # Composition used instead of inheritence: Vault has a User object instance
+        self.username = user.username # variable to store username as a string (not the object instance)
         
         # Add this transaction to the pots list of transactions
         pot.add_transaction(self)
@@ -234,13 +239,14 @@ class Transaction:
         "date": self.date,
         "pot_id": self.pot_id,
         "type": self.type,
-        "amount": self.amount
+        "amount": self.amount,
+        "user": self.username
         }
     
     def save_to_csv(self):
         file_exists = os.path.isfile("database/transactions.csv")
         with open("database/transactions.csv", "a", newline ="") as f:
-            fieldnames = ["transaction_id", "transaction_name", "date", "pot_id", "type", "amount"]
+            fieldnames = ["transaction_id", "transaction_name", "date", "pot_id", "type", "amount", "user"]
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             if not file_exists:
                 writer.writeheader()

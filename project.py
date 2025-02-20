@@ -1,6 +1,6 @@
 import csv, datetime, os
 from project_classes import User, Vault, Pot, Transaction
-from project_functions import submit_transaction, print_slow, int_validator, collect_date, convert_date, summary, create_pot, create_user, create_vault, create_profile, instructions, re_vaults, re_pots, re_transactions
+from project_functions import submit_transaction, print_slow, int_validator, collect_date, convert_date, summary, create_pot, create_user, create_vault, create_profile, instructions, re_vaults, re_pots, re_transactions, count_pots, count_transactions, count_vaults
 from time import sleep
 
 def main():
@@ -85,7 +85,7 @@ Welcome to Money Pots, your savings and budgeting calculator. Let me help you to
     # Loop until exit
 
     while True:
-        print_slow('Now, I await your commands to proceed. Please type: \n\n "Transaction" to submit a new transaction, \n "Summary" to get a report of vault/pot values, or \n "Instructions" to get a further information on how to use Money Pots \n "Exit" to terminate the programme')
+        print_slow('Now, I await your commands to proceed. Please type: \n\n "Transaction" to submit a new transaction, \n "Summary" to get a report of vault/pot values, or \n "Instructions" to get a further information on how to use Money Pots \n "Vault" to create a new vault \n "Pot" to create a new pot \n "Exit" to terminate the programme')
         print()
         print()
         action = input()
@@ -106,22 +106,10 @@ Welcome to Money Pots, your savings and budgeting calculator. Let me help you to
                         print()
                         
                         while True: 
+                              
+                            # Count existing transactions
                             
-                            # Count number of existing pots
-                            file_exists = os.path.isfile("database/transactions.csv")
-
-                            if not file_exists:
-                                start_transaction = 0
-                            
-                            else:
-                                transactions_count = []
-                                with open("database/transactions.csv", newline="") as f:
-                                    reader = csv.DictReader(f)
-                                
-                                    for row in reader:
-                                        transactions_count.append(row["transaction_id"])
-                                    
-                                    start_transaction = len(transactions_count)
+                            start_transaction = count_transactions()
                             
                             print_slow("What pot should this pot be assigned to?: ")
                             pot_input = input()
@@ -159,9 +147,36 @@ Welcome to Money Pots, your savings and budgeting calculator. Let me help you to
             summary(vaults, pots)
             print()
 
+        # Print Instructions
+
         elif action == "Instructions":
             print_slow(instructions())
 
+        # Create new Vault
+
+        elif action == "Vault":
+            vault_count = count_vaults()
+            vaults[f"vault_{(vault_count + 1)}"] = create_vault(vault_count, user)
+            print()
+        
+        # Create new Pot
+
+        elif action == "Pot":
+            print_slow("What vault will this pot be assigned to? ")
+            pot_vault = input()
+            pot_count = count_pots()
+            selected_vault = None
+            for vault in vaults.values():
+                if vault.vault_name == pot_vault and vault.username == user.username:
+                    selected_vault = vault
+
+            if selected_vault:
+                pots[f"pot_{(pot_count + 1)}"] = create_pot(pot_count, selected_vault, user)
+
+            else:
+                print(f"Vault '{vault_input}' not found. Please enter a valid vault name.")
+                print()
+        
         # Exit
 
         elif action == "Exit":
@@ -174,7 +189,6 @@ Welcome to Money Pots, your savings and budgeting calculator. Let me help you to
         else:
             print_slow("Invalid command. Please try again")
             print()
-        
         
 
 if __name__ == "__main__":

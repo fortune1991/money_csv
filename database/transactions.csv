@@ -1,6 +1,2 @@
 transaction_id,transaction_name,date,pot_id,type,amount,user
-1,WOF,2025-02-20 00:00:00,4,out,-60,Mike
-2,Coffee,2025-02-20 00:00:00,1,out,-50,Mike
-3,Saving,2025-02-20 00:00:00,2,in,60,Mike
-4,Beer,2025-02-20 00:00:00,5,out,-10,Steve
-5,Coffee,2025-02-20 00:00:00,5,out,-10,Steve
+1,Coffee,2025-02-20 00:00:00,1,out,-10,Mike

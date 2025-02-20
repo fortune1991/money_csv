@@ -285,7 +285,7 @@ def create_profile():
                     # Find the vault using a simple loop
                     selected_vault = None
                     for vault in vaults.values():
-                        if vault.vault_name == vault_input:
+                        if vault.vault_name == vault_input and vault.username == user.username:
                             selected_vault = vault
                             break
 
@@ -333,11 +333,14 @@ increase or decrease its balance, depending on the selected type.
 reflecting any transactions you've made.
 3. Exit the program – A final summary of your balances will be displayed before 
 the program closes.
+4. Create a new vault - will be associated with the user currently logged in
+5. Create a new pot - will be associated with the user currently logged in
 
 Please note: This program does not store data permanently. Once you exit, all 
 Vault and Pot data will be lost.
 
 We hope you enjoy using Money Pots!
+
 """
 
 def re_vaults(name, user):
@@ -404,3 +407,54 @@ def re_transactions(pots, pot_ids, user):
                 # Append transaction_id to list
                 transaction_ids.append(transaction_id)
     return transactions, transaction_ids
+
+def count_pots():
+    # Count number of existing pots
+    file_exists = os.path.isfile("database/pots.csv")
+
+    if not file_exists:
+        return 0
+    
+    else:
+        pots_count = []
+        with open("database/pots.csv", newline="") as f:
+            reader = csv.DictReader(f)
+        
+            for row in reader:
+                pots_count.append(row["pot_id"])
+            
+            return len(pots_count)
+        
+def count_vaults():
+    # Count number of existing pots
+    file_exists = os.path.isfile("database/vaults.csv")
+
+    if not file_exists:
+        return 0
+    
+    else:
+        vaults_count = []
+        with open("database/vaults.csv", newline="") as f:
+            reader = csv.DictReader(f)
+        
+            for row in reader:
+                vaults_count.append(row["vault_id"])
+            
+            return len(vaults_count)
+        
+def count_transactions():
+    # Count number of existing pots
+    file_exists = os.path.isfile("database/transactions.csv")
+
+    if not file_exists:
+        return 0
+    
+    else:
+        transactions_count = []
+        with open("database/transactions.csv", newline="") as f:
+            reader = csv.DictReader(f)
+        
+            for row in reader:
+                transactions_count.append(row["transaction_id"])
+            
+            return len(transactions_count)

@@ -3,7 +3,6 @@ from project_classes import User, Vault, Pot, Transaction
 from time import sleep
 
 def submit_transaction(x, pot, user):
-    
     # Collect transaction name
     print()
     print_slow("Please provide a name reference for this transaction: ")
@@ -73,7 +72,6 @@ def int_validator():
             break
         except ValueError:
             print_slow("Invalid input. Please enter a valid integer: ")
-        
     return value
 
 def collect_date(message):

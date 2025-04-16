@@ -52,7 +52,7 @@ class Vault:
         if start > end:
             raise ValueError("start date cannot be later than end date!")
         
-        if not isinstance(user, User):  # Validate that user is a User object
+        if not isinstance(user, User):  
             raise ValueError("user must be an instance of the User class!")
 
         # Assign to self object
@@ -60,8 +60,8 @@ class Vault:
         self.vault_name = vault_name
         self.start = start
         self.end = end
-        self.user = user # Composition used instead of inheritence: Vault has a User object instance
-        self.username = user.username # variable to store username as a string (not the object instance)
+        self.user = user 
+        self.username = user.username 
         self.pots = []  # List to store associated Pot instances
 
     def add_pot(self, pot):
@@ -131,7 +131,7 @@ class Pot:
         if start > end:
             raise ValueError("start date cannot be later than end date!")
         
-        if not isinstance(vault, Vault):  # Validate that vault is a Vault object
+        if not isinstance(vault, Vault):  
             raise ValueError("vault must be an instance of the Vault class!")
         
          # Assign unique Pot attributes
@@ -139,12 +139,12 @@ class Pot:
         self.pot_name = pot_name
         self.start = start
         self.end = end
-        self.vault = vault  # Composition used instead of inheritence: Pot has a Vault object instance
-        self.vault_id = vault.vault_id # vault_id as string
+        self.vault = vault  
+        self.vault_id = vault.vault_id 
         self.amount = amount
-        self.transactions = [] # List only contains transactions that need processing (i.e. subtracting or adding from pot amount)
-        self.user = user # Composition used instead of inheritence: Vault has a User object instance
-        self.username = user.username # variable to store username as a string (not the object instance)
+        self.transactions = [] 
+        self.user = user
+        self.username = user.username 
 
         # Add this Pot to the Vault's list of pots
         vault.add_pot(self)
@@ -212,7 +212,7 @@ class Transaction:
         if not isinstance(date, datetime.date):
             raise ValueError("Must be a valid date object!")
         
-        if not isinstance(pot, Pot):  # Validate that pot is a Pot object
+        if not isinstance(pot, Pot):  
             raise ValueError("pot must be an instance of the Pot class!")
         
         if type not in ["in", "out"]:
@@ -222,12 +222,12 @@ class Transaction:
         self.transaction_id = transaction_id
         self.transaction_name = transaction_name
         self.date = date
-        self.pot = pot  # Composition used instead of inheritence: Transaction has a Pot object instance
-        self.pot_id = pot.pot_id # String of pot_id
+        self.pot = pot  
+        self.pot_id = pot.pot_id
         self.type = type
         self.amount = amount
-        self.user = user # Composition used instead of inheritence: Vault has a User object instance
-        self.username = user.username # variable to store username as a string (not the object instance)
+        self.user = user 
+        self.username = user.username 
         
         # Add this transaction to the pots list of transactions
         pot.add_transaction(self)
